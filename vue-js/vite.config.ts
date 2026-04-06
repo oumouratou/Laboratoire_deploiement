@@ -4,10 +4,9 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
 export default defineConfig({
-  // Remplace la ligne existante par celle-ci :
-base: '/',,
+  
+base: '/',
   plugins: [
     vue(),
     vueDevTools(),
