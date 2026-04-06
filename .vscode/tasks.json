@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Git status",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short",
+				"--branch"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Push Laboratoire_deploiement to GitHub",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"$ErrorActionPreference='Stop'; $root='C:\\Users\\ACONTE\\Desktop\\Deploiement_labo\\Laboratoire_deploiement'; Set-Location $root; if (-not (Test-Path '.git')) { git init }; git branch -M main; if ((git remote | Select-String '^origin$').Length -eq 0) { git remote add origin https://github.com/oumouratou/Laboratoire_deploiement.git } else { git remote set-url origin https://github.com/oumouratou/Laboratoire_deploiement.git }; git add .; git commit -m 'Initial split of Spring Boot, Vue.js, and Flask services' ; git push -u origin main"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

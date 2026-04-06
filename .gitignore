@@ -1,0 +1,17 @@
+# Java / Spring Boot
+spring-boot/target/
+spring-boot/.mvn/wrapper/maven-wrapper.jar
+
+# Vue.js
+vue-js/node_modules/
+vue-js/dist/
+
+# Flask
+flask/venv/
+flask/.venv/
+flask/__pycache__/
+flask/*.pyc
+
+# General
+.DS_Store
+Thumbs.db
