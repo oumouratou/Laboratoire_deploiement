@@ -1,0 +1,475 @@
+@import "admin-lte/plugins/fontawesome-free/css/all.css";
+@import "admin-lte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css";
+@import "admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css";
+@import "admin-lte/plugins/jqvmap/jqvmap.min.css";
+@import "admin-lte/dist/css/adminlte.min.css";
+@import "admin-lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css";
+@import "admin-lte/plugins/daterangepicker/daterangepicker.css";
+@import "admin-lte/plugins/summernote/summernote-bs4.min.css";
+
+:root {
+  --accent-color: #007bff;
+}
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #f4f6f9;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ================= DARK MODE ================= */
+body.dark-mode {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .main-sidebar {
+  background-color: #16213e !important;
+}
+
+body.dark-mode .nav-sidebar > .nav-item > .nav-link {
+  color: #c0c0c0;
+}
+
+body.dark-mode .nav-sidebar > .nav-item.menu-open > .nav-link,
+body.dark-mode .nav-sidebar > .nav-item:hover > .nav-link {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+body.dark-mode .card {
+  background-color: #16213e;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .card-header {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .card-title {
+  color: #e0e0e0;
+}
+
+body.dark-mode .table {
+  color: #e0e0e0;
+}
+
+body.dark-mode .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .table thead th {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .table td,
+body.dark-mode .table th {
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .content-header h1 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .content-wrapper {
+  background-color: #1a1a2e;
+}
+
+body.dark-mode .main-header {
+  background-color: #16213e;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .main-header .nav-link {
+  color: #c0c0c0;
+}
+
+body.dark-mode .form-control {
+  background-color: #2a2a4a;
+  border-color: #3a3a5a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .form-control:focus {
+  background-color: #333355;
+  border-color: var(--accent-color);
+  color: #fff;
+}
+
+body.dark-mode .modal-content {
+  background-color: #16213e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .modal-header {
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .modal-footer {
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .list-group-item {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .text-muted {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode .small-box {
+  color: #fff;
+}
+
+body.dark-mode .brand-link {
+  background-color: #0f172a;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .settings-title {
+  color: #e0e0e0;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .setting-label {
+  color: #e0e0e0;
+}
+
+body.dark-mode .setting-description {
+  color: #a0a0a0;
+}
+
+body.dark-mode hr {
+  border-color: #2a2a4a;
+}
+
+/* ================= DARK MODE - ADDITIONAL STYLES ================= */
+
+/* Sidebar navigation */
+body.dark-mode .nav-sidebar .nav-link {
+  color: #c0c0c0;
+}
+
+body.dark-mode .nav-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+body.dark-mode .nav-sidebar .nav-link.active {
+  background-color: var(--accent-color, #007bff);
+  color: #fff;
+}
+
+body.dark-mode .nav-header {
+  color: #808080;
+}
+
+body.dark-mode .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-treeview {
+  background-color: #0f172a;
+}
+
+/* Buttons */
+body.dark-mode .btn-secondary {
+  background-color: #3a3a5a;
+  border-color: #4a4a6a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .btn-secondary:hover {
+  background-color: #4a4a6a;
+  border-color: #5a5a7a;
+}
+
+body.dark-mode .btn-outline-secondary {
+  color: #c0c0c0;
+  border-color: #4a4a6a;
+}
+
+body.dark-mode .btn-outline-secondary:hover {
+  background-color: #3a3a5a;
+  color: #fff;
+}
+
+/* Dropdown menus */
+body.dark-mode .dropdown-menu {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .dropdown-item {
+  color: #c0c0c0;
+}
+
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+body.dark-mode .dropdown-divider {
+  border-color: #2a2a4a;
+}
+
+/* Alerts */
+body.dark-mode .alert {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .alert-info {
+  background-color: rgba(23, 162, 184, 0.2);
+  color: #7dd3fc;
+}
+
+body.dark-mode .alert-warning {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #fcd34d;
+}
+
+body.dark-mode .alert-success {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #86efac;
+}
+
+body.dark-mode .alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #fca5a5;
+}
+
+/* Badges */
+body.dark-mode .badge-secondary {
+  background-color: #4a4a6a;
+}
+
+/* Pagination */
+body.dark-mode .page-link {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+  color: #c0c0c0;
+}
+
+body.dark-mode .page-link:hover {
+  background-color: #2a3a5a;
+  color: #fff;
+}
+
+body.dark-mode .page-item.active .page-link {
+  background-color: var(--accent-color, #007bff);
+  border-color: var(--accent-color, #007bff);
+}
+
+body.dark-mode .page-item.disabled .page-link {
+  background-color: #16213e;
+  color: #606060;
+}
+
+/* Info boxes and small boxes */
+body.dark-mode .info-box {
+  background-color: #16213e;
+}
+
+body.dark-mode .info-box-content {
+  color: #e0e0e0;
+}
+
+/* Input groups */
+body.dark-mode .input-group-text {
+  background-color: #2a2a4a;
+  border-color: #3a3a5a;
+  color: #c0c0c0;
+}
+
+/* Select2 (si utilisé) */
+body.dark-mode .select2-container--default .select2-selection--single {
+  background-color: #2a2a4a;
+  border-color: #3a3a5a;
+}
+
+body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #e0e0e0;
+}
+
+body.dark-mode .select2-dropdown {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .select2-results__option {
+  color: #c0c0c0;
+}
+
+body.dark-mode .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--accent-color, #007bff);
+}
+
+/* Progress bars */
+body.dark-mode .progress {
+  background-color: #2a2a4a;
+}
+
+/* Breadcrumbs */
+body.dark-mode .breadcrumb {
+  background-color: #1f2940;
+}
+
+body.dark-mode .breadcrumb-item a {
+  color: #7dd3fc;
+}
+
+body.dark-mode .breadcrumb-item.active {
+  color: #a0a0a0;
+}
+
+/* Nav tabs */
+body.dark-mode .nav-tabs {
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .nav-tabs .nav-link {
+  color: #c0c0c0;
+}
+
+body.dark-mode .nav-tabs .nav-link:hover {
+  border-color: #3a3a5a;
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+  background-color: #16213e;
+  border-color: #2a2a4a #2a2a4a #16213e;
+  color: #e0e0e0;
+}
+
+/* Nav pills */
+body.dark-mode .nav-pills .nav-link {
+  color: #c0c0c0;
+}
+
+body.dark-mode .nav-pills .nav-link.active {
+  background-color: var(--accent-color, #007bff);
+}
+
+/* Scrollbar for dark mode */
+body.dark-mode ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #3a3a5a;
+  border-radius: 5px;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #4a4a6a;
+}
+
+/* Calendar/Date picker */
+body.dark-mode .datepicker {
+  background-color: #1f2940;
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .datepicker table tr td,
+body.dark-mode .datepicker table tr th {
+  color: #c0c0c0;
+}
+
+body.dark-mode .datepicker table tr td.active,
+body.dark-mode .datepicker table tr td.active:hover {
+  background-color: var(--accent-color, #007bff);
+}
+
+/* Tooltips */
+body.dark-mode .tooltip-inner {
+  background-color: #2a2a4a;
+  color: #e0e0e0;
+}
+
+/* Code blocks */
+body.dark-mode code {
+  background-color: #2a2a4a;
+  color: #f472b6;
+}
+
+body.dark-mode pre {
+  background-color: #0f172a;
+  color: #e0e0e0;
+}
+
+/* Cards outline variants */
+body.dark-mode .card-outline.card-primary {
+  border-top-color: var(--accent-color, #007bff);
+}
+
+body.dark-mode .card-outline.card-success {
+  border-top-color: #10b981;
+}
+
+body.dark-mode .card-outline.card-warning {
+  border-top-color: #f59e0b;
+}
+
+body.dark-mode .card-outline.card-danger {
+  border-top-color: #ef4444;
+}
+
+body.dark-mode .card-outline.card-info {
+  border-top-color: #06b6d4;
+}
+
+/* User panel */
+body.dark-mode .user-panel .info a {
+  color: #c0c0c0;
+}
+
+/* Profil page specific */
+body.dark-mode .profile-user-img {
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .box-profile {
+  border-color: #2a2a4a;
+}
+
+body.dark-mode .profile-username {
+  color: #e0e0e0;
+}
+
+/* Switch toggle for dark mode */
+body.dark-mode .switch .slider {
+  background-color: #3a3a5a;
+}
+
+body.dark-mode .switch input:checked + .slider {
+  background-color: var(--accent-color, #007bff);
+}
+
+/* Color buttons in settings */
+body.dark-mode .color-btn {
+  border-color: #3a3a5a;
+}
+
+body.dark-mode .color-btn.active {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Close button */
+body.dark-mode .close {
+  color: #c0c0c0;
+  text-shadow: none;
+}
+
+body.dark-mode .close:hover {
+  color: #fff;
+}

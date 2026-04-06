@@ -1,0 +1,649 @@
+<template>
+  <div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" :class="{ collapsed: isCollapsed }">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span v-if="!isCollapsed">Enseignant</span>
+        </div>
+        <button class="toggle-btn" @click="isCollapsed = !isCollapsed">
+          <i :class="isCollapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left'"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- Principal -->
+        <div class="nav-section">
+          <span class="nav-section-title" v-if="!isCollapsed">PRINCIPAL</span>
+          <router-link to="/enseignant" class="nav-item" exact-active-class="active">
+            <i class="fas fa-home"></i>
+            <span v-if="!isCollapsed">Tableau de bord</span>
+          </router-link>
+        </div>
+
+        <!-- Ressources -->
+        <div class="nav-section">
+          <span class="nav-section-title" v-if="!isCollapsed">RESSOURCES</span>
+          <router-link to="/enseignant/laboratoires" class="nav-item" active-class="active">
+            <i class="fas fa-flask"></i>
+            <span v-if="!isCollapsed">Laboratoires</span>
+          </router-link>
+          <router-link to="/enseignant/equipements" class="nav-item" active-class="active">
+            <i class="fas fa-desktop"></i>
+            <span v-if="!isCollapsed">Équipements</span>
+          </router-link>
+        </div>
+
+        <!-- Réservations (Chef de département uniquement) -->
+        <div class="nav-section" v-if="isChefDepartement">
+          <span class="nav-section-title" v-if="!isCollapsed">RÉSERVATIONS</span>
+          <router-link to="/enseignant/reservations" class="nav-item" active-class="active">
+            <i class="fas fa-calendar-check"></i>
+            <span v-if="!isCollapsed">Réservations</span>
+          </router-link>
+        </div>
+
+        <!-- Réclamations -->
+        <div class="nav-section">
+          <span class="nav-section-title" v-if="!isCollapsed">RÉCLAMATIONS</span>
+          <router-link to="/enseignant/reclamations" class="nav-item" active-class="active">
+            <i class="fas fa-exclamation-circle"></i>
+            <span v-if="!isCollapsed">Mes réclamations</span>
+          </router-link>
+          <router-link to="/enseignant/nouvelle-reclamation" class="nav-item" active-class="active">
+            <i class="fas fa-plus-circle"></i>
+            <span v-if="!isCollapsed">Nouvelle réclamation</span>
+          </router-link>
+        </div>
+
+        <!-- Notifications -->
+        <div class="nav-section">
+          <span class="nav-section-title" v-if="!isCollapsed">NOTIFICATIONS</span>
+          <router-link to="/enseignant/notifications" class="nav-item" active-class="active">
+            <i class="fas fa-bell"></i>
+            <span v-if="!isCollapsed">Mes notifications</span>
+          </router-link>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info" v-if="!isCollapsed">
+          <div class="user-avatar">{{ getInitials() }}</div>
+          <div class="user-details">
+            <span class="user-name">{{ userName }}</span>
+            <span class="user-role">Enseignant</span>
+          </div>
+        </div>
+        <router-link to="/enseignant/profil" class="profile-btn" v-if="!isCollapsed">
+          <i class="fas fa-user-cog"></i>
+          <span>Mon profil</span>
+        </router-link>
+        <button class="logout-btn" @click="logout">
+          <i class="fas fa-sign-out-alt"></i>
+          <span v-if="!isCollapsed">Déconnexion</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-header">
+        <div class="header-left">
+          <h1 class="page-title">{{ pageTitle }}</h1>
+        </div>
+        <div class="header-right">
+          <div class="header-actions">
+            <NotificationBelle role="ENSEIGNANT" />
+            
+            <!-- User Profile Dropdown -->
+            <div class="user-dropdown-wrapper">
+              <div class="user-dropdown" @click="toggleUserDropdown">
+                <div class="avatar-with-status">
+                  <div class="user-avatar-small" v-if="!profilePhotoUrl">{{ getInitials() }}</div>
+                  <img v-else :src="profilePhotoUrl" class="user-avatar-img" alt="Photo profil">
+                  <span class="online-indicator"></span>
+                </div>
+                <span class="user-name">{{ userName }}</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              
+              <!-- Dropdown Menu -->
+              <div class="user-menu" v-if="showUserDropdown">
+                <div class="user-menu-header">
+                  <div class="user-avatar-large" v-if="!profilePhotoUrl">{{ getInitials() }}</div>
+                  <img v-else :src="profilePhotoUrl" class="user-avatar-large-img" alt="Photo profil">
+                  <div class="user-menu-info">
+                    <span class="user-menu-name">{{ userName }}</span>
+                    <span class="user-menu-role">Enseignant</span>
+                  </div>
+                </div>
+                <div class="user-menu-divider"></div>
+                <router-link to="/enseignant/profil" class="user-menu-item" @click="showUserDropdown = false">
+                  <i class="fas fa-user-circle"></i>
+                  <span>Mon profil</span>
+                </router-link>
+                <div class="user-menu-item" @click="logout">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Déconnexion</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <router-view />
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import NotificationBelle from '@/components/NotificationBelle.vue'
+import api from '@/Service/api'
+
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+const isCollapsed = ref(false)
+const showUserDropdown = ref(false)
+const profilePhotoUrl = ref<string | null>(null)
+
+const userName = computed(() => {
+  const user = authStore.currentUser
+  return user ? `${user.prenom} ${user.nom}` : 'Enseignant'
+})
+
+const isChefDepartement = computed(() => authStore.isChefDepartement)
+
+const pageTitle = computed(() => {
+  const titles: Record<string, string> = {
+    '/enseignant': 'Tableau de bord',
+    '/enseignant/laboratoires': 'Laboratoires',
+    '/enseignant/equipements': 'Équipements',
+    '/enseignant/reservations': 'Réservations',
+    '/enseignant/reclamations': 'Mes réclamations',
+    '/enseignant/nouvelle-reclamation': 'Nouvelle réclamation',
+    '/enseignant/profil': 'Mon Profil'
+  }
+  return titles[route.path] || 'Tableau de bord'
+})
+
+function getInitials(): string {
+  const user = authStore.currentUser
+  if (user) {
+    return `${user.prenom?.charAt(0) || ''}${user.nom?.charAt(0) || ''}`.toUpperCase()
+  }
+  return 'EN'
+}
+
+function toggleUserDropdown() {
+  showUserDropdown.value = !showUserDropdown.value
+}
+
+function closeDropdownOnClickOutside(event: MouseEvent) {
+  const target = event.target as HTMLElement
+  if (!target.closest('.user-dropdown-wrapper')) {
+    showUserDropdown.value = false
+  }
+}
+
+async function loadProfilePhoto() {
+  try {
+    const res = await api.get('/users/photo', { responseType: 'blob' })
+    if (res.data && res.data.size > 0) {
+      profilePhotoUrl.value = URL.createObjectURL(res.data)
+    }
+  } catch (error) {
+    profilePhotoUrl.value = null
+  }
+}
+
+function logout() {
+  showUserDropdown.value = false
+  authStore.logout()
+  router.push('/')
+}
+
+onMounted(() => {
+  loadProfilePhoto()
+  document.addEventListener('click', closeDropdownOnClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdownOnClickOutside)
+})
+</script>
+
+<style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #f1f5f9;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.logo i {
+  font-size: 28px;
+  color: #f59e0b;
+}
+
+.toggle-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 12px;
+  overflow-y: auto;
+}
+
+.nav-section {
+  margin-bottom: 24px;
+}
+
+.nav-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 12px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.nav-item i {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 14px;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-details .user-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-details .user-role {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Bouton profil */
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+
+.profile-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fff;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.collapsed + .main-content {
+  margin-left: 80px;
+}
+
+.top-header {
+  background: #fff;
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* User Dropdown Wrapper */
+.user-dropdown-wrapper {
+  position: relative;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-dropdown:hover {
+  background: #e2e8f0;
+}
+
+.user-avatar-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-with-status {
+  position: relative;
+  display: inline-block;
+}
+
+.online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #28a745;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 4px rgba(40, 167, 69, 0.5);
+}
+
+.user-dropdown .user-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.user-dropdown i {
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* User Menu Dropdown */
+.user-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 260px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.user-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.user-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.user-avatar-large-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.user-menu-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-menu-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-menu-role {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #475569;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-menu-item:hover {
+  background: #f8fafc;
+  color: #f59e0b;
+}
+
+.user-menu-item i {
+  width: 20px;
+  text-align: center;
+}
+
+.page-content {
+  flex: 1;
+  padding: 32px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 80px;
+  }
+  
+  .sidebar .logo span,
+  .sidebar .nav-section-title,
+  .sidebar .nav-item span,
+  .sidebar .user-info,
+  .sidebar .logout-btn span {
+    display: none;
+  }
+  
+  .main-content {
+    margin-left: 80px;
+  }
+}
+</style>
