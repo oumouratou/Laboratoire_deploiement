@@ -6,9 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Configure via env when app is hosted under a sub-path (e.g. /Gestion_labo/)
-  // Keep '/' as safe default for Render root deployments.
-  base: process.env.VITE_PUBLIC_BASE || '/',
+  base: process.env.NODE_ENV === 'production' ? '/Gestion_labo/' : '/',
   plugins: [
     vue(),
     vueDevTools(),

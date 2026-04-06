@@ -1,7 +1,7 @@
 <template>
   <div class="app-wrapper">
     <!-- Sidebar -->
-    <aside class="sidebar" :class="{ collapsed: sidebarCollapsed, 'mobile-open': isMobileMenuOpen }">
+    <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
       <div class="sidebar-header">
         <div class="logo">
           <i class="fas fa-flask"></i>
@@ -113,16 +113,11 @@
       </div>
     </aside>
 
-    <div v-if="isMobileMenuOpen" class="sidebar-overlay" @click="closeMobileMenu"></div>
-
     <!-- Main Content -->
     <main class="main-content">
       <!-- Top Header -->
       <header class="top-header">
         <div class="header-left">
-          <button class="mobile-menu-btn" @click="isMobileMenuOpen = true" aria-label="Ouvrir le menu">
-            <i class="fas fa-bars"></i>
-          </button>
           <h1 class="page-title">{{ currentPageTitle }}</h1>
         </div>
         <div class="header-right">
@@ -176,7 +171,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import NotificationBelle from '@/components/NotificationBelle.vue'
@@ -186,7 +181,6 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const sidebarCollapsed = ref(false)
-const isMobileMenuOpen = ref(false)
 const showUserDropdown = ref(false)
 const profilePhotoUrl = ref<string | null>(null)
 const showReclamationsMenu = ref(false)
@@ -228,16 +222,6 @@ function toggleReclamationsMenu() {
   showReclamationsMenu.value = !showReclamationsMenu.value
 }
 
-function closeMobileMenu() {
-  isMobileMenuOpen.value = false
-}
-
-function handleResize() {
-  if (window.innerWidth > 1024) {
-    isMobileMenuOpen.value = false
-  }
-}
-
 function closeDropdownOnClickOutside(event: MouseEvent) {
   const target = event.target as HTMLElement
   if (!target.closest('.user-dropdown-wrapper')) {
@@ -258,24 +242,16 @@ async function loadProfilePhoto() {
 
 function handleLogout() {
   showUserDropdown.value = false
-  closeMobileMenu()
   authStore.logout()
   router.push('/')
 }
 
-watch(() => route.path, () => {
-  closeMobileMenu()
-})
-
 onMounted(() => {
   loadProfilePhoto()
-  handleResize()
-  window.addEventListener('resize', handleResize)
   document.addEventListener('click', closeDropdownOnClickOutside)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
   document.removeEventListener('click', closeDropdownOnClickOutside)
 })
 </script>
@@ -521,24 +497,6 @@ onUnmounted(() => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.mobile-menu-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 10px;
-  background: #e2e8f0;
-  color: #1e293b;
-  cursor: pointer;
-}
-
-.sidebar-overlay {
-  display: none;
 }
 
 .page-title {
@@ -935,84 +893,25 @@ onUnmounted(() => {
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .mobile-menu-btn {
-    display: inline-flex;
-  }
-
   .sidebar {
-    width: 280px;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 130;
-  }
-
-  .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  .sidebar-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    z-index: 120;
-  }
-
-  .sidebar.collapsed {
-    width: 280px;
-  }
-
-  .sidebar.collapsed .logo span,
-  .sidebar.collapsed .nav-section-title,
-  .sidebar.collapsed .nav-item span,
-  .sidebar.collapsed .user-info,
-  .sidebar.collapsed .logout-btn span,
-  .sidebar.collapsed .profile-btn span {
-    display: inline;
-  }
-
-  .sidebar.collapsed .nav-item {
-    justify-content: flex-start;
-    padding: 12px 16px;
-  }
-
-  .main-content {
-    margin-left: 0;
+    width: 80px;
   }
   
-  .top-header {
-    padding: 14px 16px;
-  }
-
-  .page-content {
-    padding: 16px;
-  }
-
-  .header-actions {
-    gap: 10px;
-  }
-
-  .user-dropdown .user-name {
+  .sidebar .logo span,
+  .sidebar .nav-section-title,
+  .sidebar .nav-item span,
+  .sidebar .user-info,
+  .sidebar .logout-btn span {
     display: none;
   }
 
+  .main-content {
+    margin-left: 80px;
+  }
+
   .notification-dropdown {
-    width: min(92vw, 340px);
-    right: -10px;
-  }
-}
-
-@media (max-width: 640px) {
-  .page-title {
-    font-size: 20px;
-  }
-
-  .user-dropdown {
-    padding: 6px 10px;
-  }
-
-  .user-menu {
-    width: min(90vw, 280px);
+    width: 300px;
+    right: -50px;
   }
 }
 .has-submenu {
